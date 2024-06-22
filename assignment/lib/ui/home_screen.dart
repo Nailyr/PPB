@@ -2,13 +2,13 @@ import 'package:assignment/main.dart';
 import 'package:assignment/ui/edittask.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:timezone/data/latest.dart' as tz;
+import 'package:intl/intl.dart';
 import 'package:timezone/timezone.dart' as tz;
-import 'addtaskscreen.dart';
 import 'login.dart';
+import 'dart:async';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -23,7 +23,18 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    FirebaseMessaging.instance.requestPermission();
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      // Handle foreground messages
+    });
     scheduleNotificationsForDueTasks();
+    checkDueTasksPeriodically();
+  }
+
+  void checkDueTasksPeriodically() {
+    // Check tasks periodically (e.g., every hour)
+    Duration interval = Duration(minutes: 60);
+    Timer.periodic(interval, (Timer t) => scheduleNotificationsForDueTasks());
   }
 
   void scheduleNotificationsForDueTasks() async {
@@ -31,8 +42,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
     for (var document in snapshot.docs) {
       Map<String, dynamic> data = document.data() as Map<String, dynamic>;
-      if (data['timestamp'] != null) {
-        DateTime dueDate = (data['timestamp'] as Timestamp).toDate();
+      if (data['dateTime'] != null) {
+        // Konversi string dateTime ke objek DateTime
+        DateTime dueDate = DateTime.parse(data['dateTime']);
+
         if (dueDate.isBefore(DateTime.now())) {
           await showNotification(data['title']);
         } else {
@@ -45,8 +58,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> showNotification(String title) async {
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
-      'your_channel_id',
-      'your_channel_name',
+      'channel_id',
+      'channel_name',
       importance: Importance.max,
       priority: Priority.high,
     );
@@ -64,8 +77,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> scheduleNotification(String title, DateTime dueDate) async {
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
-      'your_channel_id',
-      'your_channel_name',
+      'channel_id',
+      'channel_name',
       importance: Importance.max,
       priority: Priority.high,
     );
@@ -117,12 +130,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const AddTaskScreen(),
-            ),
-          );
+          Navigator.pushNamed(context, '/add');
         },
         child: const Icon(Icons.add),
         backgroundColor: const Color(0xFFA27B5C),

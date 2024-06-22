@@ -1,3 +1,4 @@
+import 'package:assignment/ui/addtaskscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:assignment/ui/home_screen.dart';
 import 'package:assignment/ui/login.dart';
@@ -19,6 +20,9 @@ Route? generateRoute(RouteSettings settings) {
     case rHome:
       _route = _pageRoute(body: HomeScreen(), settings: settings);
       break;
+    case rAdd:
+      _route = _pageRoute(body: AddTaskScreen(), settings: settings);
+      break;
   }
   return _route;
 }
@@ -27,3 +31,4 @@ final NAV_KEY = GlobalKey<NavigatorState>();
 const String rLogin = '/login';
 const String rRegister = '/register';
 const String rHome = '/home';
+const String rAdd = '/add';

@@ -24,19 +24,25 @@ class _SplashScreenState extends State<SplashScreen> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              Image.asset(
+                'assets/done.png',
+                width: 100,
+                height: 100,
+                // color: Color(0xFFA27B5C),
+              ),
               Text(
                 "Assignment",
                 style: TextStyle(
                     fontSize: 40,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFFA27B5C)),
+                    color: Color(0xFFDCD7C9)),
               ),
               Text(
                 "Reminder",
                 style: TextStyle(
                     fontSize: 40,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xFFA27B5C)),
+                    color: Color(0xFFDCD7C9)),
               ),
             ]),
       ),
